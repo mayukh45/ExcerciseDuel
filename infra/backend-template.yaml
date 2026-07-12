@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Exercise Duel sync backend — DynamoDB + Lambda Function URL (no API Gateway).
+
+Parameters:
+  ApiKey:
+    Type: String
+    NoEcho: true
+    Description: Shared secret the app sends as x-api-key. Generate a random one.
+    MinLength: 16
+
+Resources:
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: code
+          AttributeType: S
+      KeySchema:
+        - AttributeName: code
+          KeyType: HASH
+
+  FnRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: ddb
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:PutItem]
+                Resource: !GetAtt Table.Arn
+
+  Fn:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Timeout: 10
+      Role: !GetAtt FnRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+          API_KEY: !Ref ApiKey
+      Code:
+        ZipFile: |
+          const{DynamoDBClient}=require("@aws-sdk/client-dynamodb");
+          const{DynamoDBDocumentClient,GetCommand,PutCommand}=require("@aws-sdk/lib-dynamodb");
+          const TABLE=process.env.TABLE_NAME,API_KEY=process.env.API_KEY;
+          const ddb=DynamoDBDocumentClient.from(new DynamoDBClient({}));
+          const json=(s,b)=>({statusCode:s,headers:{"content-type":"application/json"},body:JSON.stringify(b)});
+          const valid=c=>typeof c==="string"&&/^[A-Z2-9]{6}$/.test(c);
+          exports.handler=async(e)=>{try{
+            const m=e.requestContext?.http?.method||e.httpMethod||"GET";
+            const h=Object.fromEntries(Object.entries(e.headers||{}).map(([k,v])=>[k.toLowerCase(),v]));
+            if(!API_KEY||h["x-api-key"]!==API_KEY)return json(401,{error:"unauthorized"});
+            if(m==="GET"){
+              const code=(e.queryStringParameters||{}).code;
+              if(!valid(code))return json(400,{error:"bad code"});
+              const r=await ddb.send(new GetCommand({TableName:TABLE,Key:{code}}));
+              if(!r.Item)return json(404,{error:"not found"});
+              return json(200,{state:r.Item.state,rev:r.Item.rev});
+            }
+            if(m==="PUT"){
+              const{code,state,rev}=JSON.parse(e.body||"{}");
+              if(!valid(code)||!state||typeof state!=="object"||typeof rev!=="number")return json(400,{error:"bad request"});
+              const nextRev=rev+1;
+              try{
+                await ddb.send(new PutCommand({TableName:TABLE,Item:{code,state,rev:nextRev},
+                  ConditionExpression:rev===0?"attribute_not_exists(code)":"rev = :base",
+                  ExpressionAttributeValues:rev===0?undefined:{":base":rev}}));
+                return json(200,{state,rev:nextRev});
+              }catch(err){
+                if(err.name==="ConditionalCheckFailedException"){
+                  const r=await ddb.send(new GetCommand({TableName:TABLE,Key:{code}}));
+                  return json(409,{state:r.Item?.state??null,rev:r.Item?.rev??0});
+                }
+                throw err;
+              }
+            }
+            return json(405,{error:"method not allowed"});
+          }catch(err){console.error(err);return json(500,{error:"server error"});}};
+
+  FnUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt Fn.Arn
+      AuthType: NONE
+
+  FnUrlPerm:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Fn
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+Outputs:
+  ApiBase:
+    Description: Paste into EXPO_PUBLIC_API_BASE (strip trailing slash).
+    Value: !GetAtt FnUrl.FunctionUrl

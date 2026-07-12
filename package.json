@@ -1,0 +1,33 @@
+{
+  "name": "exercise-duel",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "test:logic": "tsx src/logic.test.ts"
+  },
+  "dependencies": {
+    "@expo-google-fonts/anton": "^0.4.2",
+    "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
+    "@expo-google-fonts/space-grotesk": "^0.4.1",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "expo": "~52.0.0",
+    "expo-asset": "~11.0.5",
+    "expo-font": "~13.0.4",
+    "expo-haptics": "~14.0.1",
+    "expo-status-bar": "~2.0.1",
+    "react": "^18.3.1",
+    "react-native": "0.76.9",
+    "react-native-svg": "15.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "~18.3.12",
+    "tsx": "^4.23.0",
+    "typescript": "~5.3.3"
+  },
+  "private": true
+}
