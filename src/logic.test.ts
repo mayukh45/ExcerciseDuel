@@ -11,8 +11,12 @@ import {
   currentStreak,
   checkWeekRollover,
   newState,
+  prunePhotos,
+  addDays,
+  PHOTO_RETENTION_DAYS,
+  PHOTO_BUDGET_BYTES,
 } from "./logic";
-import { AppState } from "./types";
+import { AppState, Photo } from "./types";
 
 // getWeekStart: Monday returns itself; Sunday returns the prior Monday.
 const mon = new Date(2026, 6, 6); // Mon Jul 6 2026
@@ -58,7 +62,7 @@ assert.equal(s.favors[0].ower, "person1", "favor ower p1");
 assert.equal(s.favors[0].auto, true, "auto favor");
 assert.equal(
   s.favors[0].text,
-  "Missed weekly goal (1/3 days) — owes a favor",
+  "Came up short this week (1/3 days) — treat your partner 💛",
   "favor wording"
 );
 assert.equal(s.lastWeekProcessed, "2026-07-13", "lastWeekProcessed advanced");
@@ -76,5 +80,42 @@ tz.log["2026-07-12"] = { person1: true, person2: true }; // Sun of that week —
 const tzChanged = checkWeekRollover(tz, nextWeek, Math.random);
 assert.equal(tzChanged, true, "tz: rollover advanced the week");
 assert.equal(tz.favors.length, 0, "tz: Sunday log counts -> no favor owed");
+
+// prunePhotos: retention window drops photos older than 30 days.
+const nowP = new Date(2026, 6, 21); // Jul 21 2026
+const mkPhoto = (at: number, size = 10): Photo => ({ uri: "x".repeat(size), at });
+const rp = newState("A", 3, "B", 3, nowP);
+rp.photos = {
+  [fmt(addDays(nowP, -1))]: { person1: mkPhoto(nowP.getTime() - 1) }, // recent, keep
+  [fmt(addDays(nowP, -(PHOTO_RETENTION_DAYS + 5)))]: { person1: mkPhoto(1) }, // stale, drop
+};
+prunePhotos(rp, nowP);
+assert.ok(rp.photos[fmt(addDays(nowP, -1))], "prune: recent photo kept");
+assert.ok(
+  !rp.photos[fmt(addDays(nowP, -(PHOTO_RETENTION_DAYS + 5)))],
+  "prune: photo past retention window dropped"
+);
+
+// prunePhotos: byte budget drops oldest-first, keeping newest under the cap.
+const rb = newState("A", 7, "B", 7, nowP);
+const big = Math.ceil(PHOTO_BUDGET_BYTES / 2) + 1000; // ~half the budget each
+rb.photos = {
+  [fmt(nowP)]: {
+    person1: mkPhoto(3000, big), // newest -> keep
+    person2: mkPhoto(2000, big), // second -> pushes total over budget
+  },
+  [fmt(addDays(nowP, -1))]: { person1: mkPhoto(1000, big) }, // oldest -> drop
+};
+prunePhotos(rb, nowP);
+const kept: number[] = [];
+for (const d of Object.keys(rb.photos!))
+  for (const p of Object.keys(rb.photos![d]))
+    kept.push(rb.photos![d][p as "person1" | "person2"]!.at);
+assert.ok(kept.includes(3000), "budget: newest photo kept");
+assert.ok(!kept.includes(1000), "budget: oldest photo dropped over budget");
+const total = Object.values(rb.photos!)
+  .flatMap((d) => Object.values(d))
+  .reduce((n, p) => n + (p ? p.uri.length : 0), 0);
+assert.ok(total <= PHOTO_BUDGET_BYTES, "budget: total stays within budget");
 
 console.log("✓ all logic checks passed");

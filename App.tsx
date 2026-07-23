@@ -3,7 +3,12 @@
 import React, { useState } from "react";
 import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useFonts, Anton_400Regular } from "@expo-google-fonts/anton";
+import {
+  useFonts,
+  Fredoka_500Medium,
+  Fredoka_600SemiBold,
+  Fredoka_700Bold,
+} from "@expo-google-fonts/fredoka";
 import {
   SpaceGrotesk_400Regular,
   SpaceGrotesk_500Medium,
@@ -38,7 +43,7 @@ function Router() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={C.chalkFaint} />
+        <ActivityIndicator color={C.inkFaint} />
         <Text style={styles.loadingText}>Loading…</Text>
       </View>
     );
@@ -129,7 +134,9 @@ function deriveRoute(
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Anton_400Regular,
+    Fredoka_500Medium,
+    Fredoka_600SemiBold,
+    Fredoka_700Bold,
     SpaceGrotesk_400Regular,
     SpaceGrotesk_500Medium,
     SpaceGrotesk_600SemiBold,
@@ -140,7 +147,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       {fontsLoaded ? (
         <View style={styles.app}>
           <DuelProvider>
@@ -149,7 +156,7 @@ export default function App() {
         </View>
       ) : (
         <View style={styles.center}>
-          <ActivityIndicator color={C.chalkFaint} />
+          <ActivityIndicator color={C.inkFaint} />
         </View>
       )}
     </SafeAreaView>
@@ -157,8 +164,8 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.ink },
+  root: { flex: 1, backgroundColor: C.paper },
   app: { flex: 1, maxWidth: 720, width: "100%", alignSelf: "center", paddingHorizontal: 16 },
   center: { flex: 1, alignItems: "center", justifyContent: "center", gap: 10 },
-  loadingText: { color: C.chalkFaint, fontFamily: F.mono, fontSize: 13 },
+  loadingText: { color: C.inkFaint, fontFamily: F.mono, fontSize: 13 },
 });

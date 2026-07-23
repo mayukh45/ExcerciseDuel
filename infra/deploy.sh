@@ -16,7 +16,9 @@ TEMPLATE="$(dirname "$0")/backend-template.yaml"
 API_KEY="$(aws cloudformation describe-stacks --stack-name "$STACK" --region "$REGION" \
   --query "Stacks[0].Parameters[?ParameterKey=='ApiKey'].ParameterValue" --output text 2>/dev/null || true)"
 if [ -z "${API_KEY:-}" ] || [ "$API_KEY" = "None" ]; then
-  API_KEY="$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32)"
+  # openssl instead of tr</dev/urandom|head: the pipe SIGPIPEs head, which
+  # under `set -o pipefail` aborts the whole script before it can deploy.
+  API_KEY="$(openssl rand -hex 16)"
 fi
 
 echo "Deploying stack '$STACK' to $REGION ..."

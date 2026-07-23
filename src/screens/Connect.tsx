@@ -32,14 +32,14 @@ export function Connect({
     return (
       <View style={s.wrap}>
         <Eyebrow>Join your partner</Eyebrow>
-        <Text style={s.title}>Enter duel code</Text>
+        <Text style={s.title}>Enter your code</Text>
         <Card>
           <TextInput
             style={s.input}
             value={code}
             onChangeText={(t) => setCode(t.toUpperCase().replace(/[^A-Z2-9]/g, ""))}
             placeholder="e.g. K7PQX4"
-            placeholderTextColor={C.chalkFaint}
+            placeholderTextColor={C.inkFaint}
             autoCapitalize="characters"
             autoCorrect={false}
             maxLength={6}
@@ -48,7 +48,7 @@ export function Connect({
         {err && <Text style={s.err}>{err}</Text>}
         <Button
           variant="primary"
-          label="Join duel"
+          label="Join"
           onPress={() => {
             if (code.length < 6) return setErr("Codes are 6 characters.");
             onJoin(code);
@@ -61,12 +61,12 @@ export function Connect({
 
   return (
     <View style={s.wrap}>
-      <Eyebrow>Set the terms</Eyebrow>
-      <Text style={s.title}>Exercise{"\n"}Duel</Text>
+      <Eyebrow>You two, in sync</Eyebrow>
+      <Text style={s.title}>Move{"\n"}Together</Text>
       <Text style={s.sub}>
-        Start a new duel and share the code with your partner, or join theirs.
+        Start a new pairing and share the code with your partner, or join theirs.
       </Text>
-      <Button variant="primary" label="Start a new duel" onPress={() => onCreate(genCode())} />
+      <Button variant="primary" label="Start a new pairing" onPress={() => onCreate(genCode())} />
       <Button label="Join with a code" onPress={() => setMode("join")} />
     </View>
   );
@@ -74,15 +74,15 @@ export function Connect({
 
 const s = StyleSheet.create({
   wrap: { flex: 1, gap: 16, paddingTop: 80 },
-  title: { fontFamily: F.display, fontSize: 40, lineHeight: 42, color: C.chalk },
-  sub: { color: C.chalkDim, fontSize: 15, lineHeight: 22, fontFamily: F.body },
+  title: { fontFamily: F.display, fontSize: 40, lineHeight: 42, color: C.ink },
+  sub: { color: C.inkDim, fontSize: 15, lineHeight: 22, fontFamily: F.body },
   input: {
-    color: C.chalk,
+    color: C.ink,
     fontFamily: F.mono,
     fontSize: 28,
     letterSpacing: 6,
     textAlign: "center",
     paddingVertical: 6,
   },
-  err: { color: C.favorLight, fontFamily: F.mono, fontSize: 12 },
+  err: { color: C.favor, fontFamily: F.mono, fontSize: 12 },
 });

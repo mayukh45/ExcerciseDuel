@@ -23,9 +23,21 @@ export interface Favor {
 // log[dateStr] = { person1?: true, person2?: true }
 export type DayLog = Partial<Record<PersonId, boolean>>;
 
+// A compressed workout-proof photo, stored inline in the synced state blob.
+export interface Photo {
+  uri: string; // small JPEG as a data: URL (base64) — see photo.ts
+  at: number; // epoch ms captured
+}
+
+// photos[dateStr] = { person1?: Photo, person2?: Photo }
+export type DayPhotos = Partial<Record<PersonId, Photo>>;
+
 export interface AppState {
   profiles: Record<PersonId, Profile>;
   log: Record<string, DayLog>;
   favors: Favor[];
   lastWeekProcessed: string; // "YYYY-MM-DD" Monday of last-checked week
+  // Optional so states saved before this feature still load. Kept small +
+  // pruned (see photo.ts) so the whole blob stays under DynamoDB's item limit.
+  photos?: Record<string, DayPhotos>;
 }

@@ -2,6 +2,11 @@
 // No React / storage / platform deps here so it stays testable (see logic.test.ts).
 import { AppState, Favor, PersonId } from "./types";
 
+export const PHOTO_RETENTION_DAYS = 30;
+// Keep total photo payload comfortably under DynamoDB's 400KB item limit even if
+// both partners log a photo every day. A base64 string's length ≈ its byte size.
+export const PHOTO_BUDGET_BYTES = 300 * 1024;
+
 /* ---------------- date helpers ---------------- */
 const pad = (n: number) => (n < 10 ? "0" + n : "" + n);
 
@@ -103,7 +108,7 @@ export function checkWeekRollover(
           id: newFavorId(now.getTime(), rand()),
           ower: person,
           owed: other(person),
-          text: `Missed weekly goal (${count}/${goal} days) — owes a favor`,
+          text: `Came up short this week (${count}/${goal} days) — treat your partner 💛`,
           status: "pending",
           createdAt: now.getTime(),
           auto: true,
@@ -129,6 +134,43 @@ export const PRESET_FAVORS = [
   "Breakfast in bed",
 ];
 
+/* ---------------- photo retention ---------------- */
+/**
+ * Mutates `state.photos` in place: drops anything older than the retention
+ * window, then, newest-first, drops the oldest photos once the running total
+ * exceeds the byte budget. Guarantees the synced blob never blows DynamoDB's
+ * item limit. Call on a fresh (copied) state inside a mutation, not live state.
+ */
+export function prunePhotos(state: AppState, now: Date = new Date()): void {
+  const photos = state.photos;
+  if (!photos) return;
+
+  // 1) Retention window (lexical compare is valid for YYYY-MM-DD).
+  const cutoff = fmt(addDays(now, -PHOTO_RETENTION_DAYS));
+  for (const date of Object.keys(photos)) {
+    if (date < cutoff) delete photos[date];
+  }
+
+  // 2) Byte budget, newest-first.
+  const entries: { date: string; person: PersonId; at: number; size: number }[] = [];
+  for (const date of Object.keys(photos)) {
+    for (const person of Object.keys(photos[date]) as PersonId[]) {
+      const p = photos[date][person];
+      if (p) entries.push({ date, person, at: p.at, size: p.uri.length });
+    }
+  }
+  entries.sort((a, b) => b.at - a.at); // newest first
+
+  let total = 0;
+  for (const e of entries) {
+    total += e.size;
+    if (total > PHOTO_BUDGET_BYTES) {
+      delete photos[e.date][e.person];
+      if (Object.keys(photos[e.date]).length === 0) delete photos[e.date];
+    }
+  }
+}
+
 /** Fresh state for a new couple. */
 export function newState(
   name1: string,
@@ -145,5 +187,6 @@ export function newState(
     log: {},
     favors: [],
     lastWeekProcessed: fmt(getWeekStart(now)),
+    photos: {},
   };
 }

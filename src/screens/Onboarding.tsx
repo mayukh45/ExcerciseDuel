@@ -21,21 +21,22 @@ export function Onboarding({
   const [goal2, setGoal2] = useState(prefill?.profiles.person2.goal ?? 3);
 
   const submit = () =>
-    onSubmit(name1.trim() || "Player One", goal1, name2.trim() || "Player Two", goal2);
+    onSubmit(name1.trim() || "You", goal1, name2.trim() || "Partner", goal2);
 
   return (
     <ScrollView contentContainerStyle={s.wrap} keyboardShouldPersistTaps="handled">
       <View>
-        <Eyebrow>Set the terms</Eyebrow>
-        <Text style={s.title}>Exercise{"\n"}Duel</Text>
+        <Eyebrow>Set your goals, together</Eyebrow>
+        <Text style={s.title}>Move{"\n"}Together</Text>
         <Text style={s.sub}>
-          Two names, two weekly goals. Miss yours, owe a favor. Hit it, rack up points.
+          Pick a weekly goal each, then show up for your workouts and cheer each
+          other on. Miss a week? You treat your partner to a little favor. 💛
         </Text>
       </View>
 
       <PersonSetup
         accent={C.playerA}
-        label="Player one"
+        label="You"
         name={name1}
         setName={setName1}
         placeholder="Your name"
@@ -44,7 +45,7 @@ export function Onboarding({
       />
       <PersonSetup
         accent={C.playerB}
-        label="Player two"
+        label="Your partner"
         name={name2}
         setName={setName2}
         placeholder="Their name"
@@ -54,7 +55,7 @@ export function Onboarding({
 
       <Button
         variant="primary"
-        label={prefill ? "Save changes" : "Let's go"}
+        label={prefill ? "Save changes" : "Start moving together"}
         onPress={submit}
       />
       {onCancel && <Button variant="ghost" label="Cancel" onPress={onCancel} />}
@@ -87,7 +88,7 @@ function PersonSetup({
         value={name}
         onChangeText={setName}
         placeholder={placeholder}
-        placeholderTextColor={C.chalkFaint}
+        placeholderTextColor={C.inkFaint}
       />
       <View style={s.goalRow}>
         <Text style={s.fieldLabel}>Days / week</Text>
@@ -103,10 +104,10 @@ const s = StyleSheet.create({
     fontFamily: F.display,
     fontSize: 44,
     lineHeight: 46,
-    color: C.chalk,
+    color: C.ink,
     marginTop: 4,
   },
-  sub: { color: C.chalkDim, fontSize: 15, lineHeight: 22, marginTop: 10, fontFamily: F.body },
+  sub: { color: C.inkDim, fontSize: 15, lineHeight: 22, marginTop: 10, fontFamily: F.body },
   person: {
     borderWidth: 1,
     borderColor: C.surfaceBorder,
@@ -119,17 +120,17 @@ const s = StyleSheet.create({
     fontSize: 11,
     textTransform: "uppercase",
     letterSpacing: 1.1,
-    color: C.chalkFaint,
+    color: C.inkFaint,
     marginBottom: 6,
   },
   input: {
-    backgroundColor: C.ink,
+    backgroundColor: C.paper,
     borderWidth: 1,
     borderColor: C.surfaceBorder,
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    color: C.chalk,
+    color: C.ink,
     fontSize: 16,
     fontFamily: F.body,
   },

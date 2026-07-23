@@ -1,35 +1,15 @@
 {
   "expo": {
-    "name": "Exercise Duel",
+    "name": "Move Together",
     "slug": "exercise-duel",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "scheme": "exerciseduel",
-    "userInterfaceStyle": "dark",
-    "backgroundColor": "#1B1A17",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FBF4EA",
     "icon": "./assets/icon.png",
-    "splash": {
-      "backgroundColor": "#1B1A17",
-      "resizeMode": "contain",
-      "image": "./assets/icon.png"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.exerciseduel.app"
-    },
-    "android": {
-      "package": "com.exerciseduel.app",
-      "adaptiveIcon": {
-        "backgroundColor": "#1B1A17",
-        "foregroundImage": "./assets/icon.png"
-      }
-    },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/icon.png"
     },
-    "plugins": [
-      "expo-font",
-      "expo-asset"
-    ]
+    "plugins": ["expo-font", "expo-asset"]
   }
 }

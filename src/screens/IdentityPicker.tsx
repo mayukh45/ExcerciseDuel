@@ -44,7 +44,7 @@ const s = StyleSheet.create({
     fontFamily: F.display,
     fontSize: 30,
     lineHeight: 32,
-    color: C.chalk,
+    color: C.ink,
     textAlign: "center",
   },
   btn: {
@@ -56,5 +56,5 @@ const s = StyleSheet.create({
     backgroundColor: C.surface,
     alignItems: "center",
   },
-  btnText: { fontFamily: F.display, fontSize: 26, color: C.chalk, letterSpacing: 0.5 },
+  btnText: { fontFamily: F.display, fontSize: 26, color: C.ink, letterSpacing: 0.5 },
 });

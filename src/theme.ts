@@ -1,27 +1,29 @@
-// Color + font tokens — ported from the prototype's :root vars and §5 of design.md.
+// Color + font tokens. Warm "paper" theme — cozy, couply: espresso ink on cream,
+// coral + teal for the two partners, dusty rose for favors, sage for wins.
 export const C = {
-  ink: "#1B1A17",
-  surface: "#252320",
-  surfaceRaised: "#2E2B27",
-  surfaceBorder: "#3A362F",
-  chalk: "#F4F0E6",
-  chalkDim: "#B8B2A6",
-  chalkFaint: "#7A7568",
-  playerA: "#4C7EA8",
-  playerALight: "#8FB6D6",
-  playerAAlt: "#3E6E96", // rope stripe
-  playerB: "#E0A23D",
-  playerBLight: "#F0C878",
-  playerBAlt: "#CC8F2E", // rope stripe
-  streak: "#A8D14C",
-  favor: "#B84B3C",
-  favorLight: "#D98B7E",
+  paper: "#FBF4EA", // app background — warm cream
+  surface: "#FFFDF8", // cards
+  surfaceRaised: "#F3E9D8", // raised chips / tabs / "you" card — warm sand
+  surfaceBorder: "#E7D8C1", // soft warm hairline
+  ink: "#3D322B", // primary text — warm espresso
+  inkDim: "#6E6157", // secondary text — muted brown
+  inkFaint: "#A99A88", // tertiary text / labels — soft taupe
+  playerA: "#E4785B", // partner one — warm coral
+  playerALight: "#EF9C86",
+  playerAAlt: "#D2694D",
+  playerB: "#3FA79A", // partner two — warm teal
+  playerBLight: "#79C6BB",
+  playerBAlt: "#348C81",
+  streak: "#7B9E5B", // wins / streaks — warm sage
+  favor: "#C97B6E", // favors — gentle dusty rose (not a punishing red)
+  favorLight: "#DDA093",
 } as const;
 
-// Font family keys registered by useFonts (see App.tsx). Anton = display,
-// Space Grotesk = body, IBM Plex Mono = utility/labels.
+// Font family keys registered by useFonts (see App.tsx). Fredoka = rounded,
+// friendly display; Space Grotesk = body; IBM Plex Mono = small utility labels.
 export const F = {
-  display: "Anton_400Regular",
+  display: "Fredoka_600SemiBold",
+  displayBold: "Fredoka_700Bold",
   body: "SpaceGrotesk_400Regular",
   bodyMed: "SpaceGrotesk_500Medium",
   bodySemi: "SpaceGrotesk_600SemiBold",

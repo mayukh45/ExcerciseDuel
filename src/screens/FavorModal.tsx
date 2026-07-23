@@ -75,7 +75,7 @@ export function FavorModal({
                   }}
                   style={[s.chip, choice === p && s.chipActive]}
                 >
-                  <Text style={[s.chipText, choice === p && { color: C.ink }]}>{p}</Text>
+                  <Text style={[s.chipText, choice === p && { color: C.paper }]}>{p}</Text>
                 </Pressable>
               ))}
             </View>
@@ -88,7 +88,7 @@ export function FavorModal({
                 if (t) setChoice(null);
               }}
               placeholder="Or type a custom favor..."
-              placeholderTextColor={C.chalkFaint}
+              placeholderTextColor={C.inkFaint}
             />
 
             <View style={s.actions}>
@@ -113,7 +113,7 @@ function DirOpt({
 }) {
   return (
     <Pressable onPress={onPress} style={[s.dirOpt, active && s.dirOptActive]}>
-      <Text style={[s.dirText, active && { color: C.ink }]}>{label}</Text>
+      <Text style={[s.dirText, active && { color: C.paper }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -131,7 +131,7 @@ const s = StyleSheet.create({
     paddingBottom: 34,
     maxHeight: "82%",
   },
-  title: { fontFamily: F.display, fontSize: 22, color: C.chalk, marginBottom: 14 },
+  title: { fontFamily: F.display, fontSize: 22, color: C.ink, marginBottom: 14 },
   dirRow: { flexDirection: "row", gap: 8, marginBottom: 16 },
   dirOpt: {
     flex: 1,
@@ -142,14 +142,14 @@ const s = StyleSheet.create({
     borderColor: C.surfaceBorder,
     alignItems: "center",
   },
-  dirOptActive: { backgroundColor: C.chalk, borderColor: C.chalk },
-  dirText: { fontSize: 13, color: C.chalkDim, fontFamily: F.body },
+  dirOptActive: { backgroundColor: C.ink, borderColor: C.ink },
+  dirText: { fontSize: 13, color: C.inkDim, fontFamily: F.body },
   fieldLabel: {
     fontFamily: F.mono,
     fontSize: 11,
     textTransform: "uppercase",
     letterSpacing: 1.1,
-    color: C.chalkFaint,
+    color: C.inkFaint,
     marginBottom: 8,
   },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 12 },
@@ -162,15 +162,15 @@ const s = StyleSheet.create({
     borderColor: C.surfaceBorder,
   },
   chipActive: { backgroundColor: C.playerB, borderColor: C.playerB },
-  chipText: { fontSize: 13, color: C.chalkDim, fontFamily: F.body },
+  chipText: { fontSize: 13, color: C.inkDim, fontFamily: F.body },
   input: {
-    backgroundColor: C.ink,
+    backgroundColor: C.paper,
     borderWidth: 1,
     borderColor: C.surfaceBorder,
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    color: C.chalk,
+    color: C.ink,
     fontSize: 16,
     fontFamily: F.body,
   },

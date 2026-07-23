@@ -95,6 +95,16 @@ Resources:
     Properties:
       TargetFunctionArn: !GetAtt Fn.Arn
       AuthType: NONE
+      # Required for the web build: the browser makes a cross-origin call from
+      # the CloudFront site to this Function URL. Function URL CORS also answers
+      # the preflight OPTIONS automatically, so the handler needs no changes.
+      # AllowOrigins "*" is fine here (auth is the x-api-key header, no cookies);
+      # tighten it to your CloudFront domain later if you like.
+      Cors:
+        AllowOrigins: ["*"]
+        AllowMethods: ["GET", "PUT"]
+        AllowHeaders: ["content-type", "x-api-key"]
+        MaxAge: 86400
 
   FnUrlPerm:
     Type: AWS::Lambda::Permission

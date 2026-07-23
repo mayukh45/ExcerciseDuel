@@ -41,8 +41,8 @@ export function Button({
       <Text
         style={[
           s.btnText,
-          variant === "primary" && { color: C.ink },
-          variant === "ghost" && { color: C.chalkDim },
+          variant === "primary" && { color: C.paper },
+          variant === "ghost" && { color: C.inkDim },
           textStyle,
         ]}
       >
@@ -99,9 +99,9 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: C.surfaceBorder,
   },
-  btnPrimary: { backgroundColor: C.chalk, borderColor: C.chalk },
+  btnPrimary: { backgroundColor: C.ink, borderColor: C.ink },
   btnGhost: { backgroundColor: "transparent", borderColor: C.surfaceBorder },
-  btnText: { fontFamily: F.bodySemi, fontSize: 15, color: C.chalk },
+  btnText: { fontFamily: F.bodySemi, fontSize: 15, color: C.ink },
   card: {
     backgroundColor: C.surface,
     borderWidth: 1,
@@ -114,13 +114,13 @@ const s = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 1.3,
     textTransform: "uppercase",
-    color: C.chalkFaint,
+    color: C.inkFaint,
   },
   stepper: {
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
-    backgroundColor: C.ink,
+    backgroundColor: C.paper,
     borderWidth: 1,
     borderColor: C.surfaceBorder,
     borderRadius: 10,
@@ -134,11 +134,11 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  stepBtnText: { color: C.chalk, fontSize: 20, fontFamily: F.body },
+  stepBtnText: { color: C.ink, fontSize: 20, fontFamily: F.body },
   stepNum: {
     fontFamily: F.mono,
     fontSize: 18,
-    color: C.chalk,
+    color: C.ink,
     minWidth: 22,
     textAlign: "center",
   },

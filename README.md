@@ -1,7 +1,7 @@
 # Exercise Duel
 
-A two-player exercise-accountability app for couples, built with Expo (React
-Native) — runs on **iOS and Android** from one codebase. Each person sets a
+A two-player exercise-accountability app for couples, built with Expo — a
+**web app** (Expo Router / React Native Web) hosted on AWS. Each person sets a
 weekly workout goal; logging a workout earns a point, missing your weekly goal
 auto-creates a "favor" you owe your partner. Ported from the web prototype in
 `~/Downloads/excercise/` (see `design.md` for the game design).
@@ -10,7 +10,7 @@ auto-creates a "favor" you owe your partner. Ported from the web prototype in
 
 ```bash
 npm install
-npm start          # then press i (iOS sim), a (Android), or scan the QR in Expo Go
+npm start          # expo start --web → http://localhost:8081
 ```
 
 Without a backend configured, the app runs **local-only** on one device (no
@@ -55,7 +55,8 @@ src/store.tsx            local (AsyncStorage) + AWS sync behind one hook
 src/remote.ts            sync client (GET/PUT /state, rev conflict handling)
 src/config.ts            reads EXPO_PUBLIC_* env; syncEnabled()
 src/theme.ts             color + font tokens
-src/components/          RopeBar (signature tug-of-war), ProgressRing, ui primitives
+src/photo.ts             camera capture + compress (proof photos); prune lives in logic.ts
+src/components/          TeamBar (shared weekly progress), ProgressRing, ui primitives
 src/screens/             Onboarding, IdentityPicker, Connect, Dashboard, FavorModal
 infra/backend-template.yaml   CloudFormation (DynamoDB + Lambda + Function URL)
 infra/backend.js         editable copy of the Lambda handler
@@ -76,6 +77,11 @@ npm run test:logic   # assert-based self-check of week/streak/rollover logic
 - Sync is foreground-pull + pull-to-refresh (no realtime push) — enough for two
   people. Auto-favors for a missed week evaluate only the single most-recent
   elapsed week (matches the prototype; no backfill).
-- Design.md's optional native extras (push reminders, widget/Live Activity) are
-  not built — say the word.
-```
+- **Proof photos**: marking a workout done requires a camera snap. Photos are
+  downscaled/compressed to small thumbnails (`src/photo.ts`) and stored *inline*
+  in the synced state blob, kept to the last 30 days and capped by a byte budget
+  (`prunePhotos` in `logic.ts`) so the single DynamoDB item stays under its 400KB
+  limit. For a guaranteed full-res archive, move the bytes to S3 and keep only
+  keys in the blob.
+- **Web-only.** iOS/Android targets were removed — hosted as a web app (add to
+  home screen for an app-like feel). No native push/widgets.
